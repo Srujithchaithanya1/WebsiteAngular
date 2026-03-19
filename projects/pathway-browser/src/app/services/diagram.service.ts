@@ -352,8 +352,8 @@ export class DiagramService {
           data: {
             id: item.id + '-outer',
             displayName: item.displayName,
-            textX: scale(item.textPosition.x - (item.prop.x + item.prop.width)) + this.COMPARTMENT_SHIFT,
-            textY: scale(item.textPosition.y - (item.prop.y + item.prop.height)) + this.COMPARTMENT_SHIFT,
+            textX: scale(item.textPosition.x - (item.prop.x + item.prop.width)) + this.COMPARTMENT_SHIFT - (item.insets ? 0 : 15),
+            textY: scale(item.textPosition.y - (item.prop.y + item.prop.height)) + this.COMPARTMENT_SHIFT + (item.insets ? 0 : 15),
             width: scale(item.prop.width),
             height: scale(item.prop.height),
             radius: outerCR
