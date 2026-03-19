@@ -199,7 +199,7 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
           this.hasNoResults = false;
         } else {
           // Successful API response - check if we have results
-          this.results = results as SearchResult;
+          this.results = this.deduplicateProteinResults(results as SearchResult);
           this.facets = facets;
           this.totalPages = Math.ceil(((results as SearchResult).numberOfMatches || 0) / this.pageSize);
           this.hasNoResults = ((results as SearchResult).numberOfMatches || 0) === 0;
@@ -301,6 +301,25 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
     return active;
+  }
+
+  private deduplicateProteinResults(results: SearchResult): SearchResult {
+    return {
+      ...results,
+      results: results.results.map(group => {
+        if (group.typeName !== 'Protein') return group;
+
+        const seen = new Map<string, SearchEntry>();
+        for (const entry of group.entries) {
+          const key = entry.referenceIdentifier || entry.stId;
+          if (!seen.has(key)) {
+            seen.set(key, entry);
+          }
+        }
+        const deduped = [...seen.values()];
+        return { ...group, entries: deduped, entriesCount: deduped.length };
+      }),
+    };
   }
 
   getDetailLink(entry: SearchEntry): string {
